@@ -14,13 +14,17 @@ type ImageType = {
 
 async function getImages(): Promise<ImageType[]> {
   try {
+    // Prefer env var, fallback based on environment
     const baseURL =
       process.env.NEXT_PUBLIC_API_BASE ||
       (process.env.NODE_ENV === "production"
         ? "https://cloud-system-a.vercel.app/api"
         : "http://localhost:3001/api");
 
-    const res = await fetch(`${baseURL}/images`, { cache: "no-store" });
+    const res = await fetch(`${baseURL}/images`, {
+      cache: "no-store",
+      // credentials: "include", // only if you need Clerk auth headers
+    });
 
     if (!res.ok) {
       console.error("Response status:", res.status, res.statusText);
@@ -28,7 +32,14 @@ async function getImages(): Promise<ImageType[]> {
     }
 
     const data: { items?: ImageType[] } = await res.json();
-    return data.items ?? [];
+
+    // Ensure imageUrl is a full URL
+    return (data.items ?? []).map((img) => ({
+      ...img,
+      imageUrl: img.imageUrl.startsWith("http")
+        ? img.imageUrl
+        : `${baseURL.replace("/api", "")}${img.imageUrl}`,
+    }));
   } catch (err) {
     console.error("Error fetching images:", err);
     return [];
