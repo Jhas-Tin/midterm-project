@@ -5,21 +5,30 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 // Always fetch fresh data
 export const dynamic = "force-dynamic";
 
-async function getImages() {
-  try {
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE;
-    if (!baseURL) throw new Error("NEXT_PUBLIC_API_BASE is not set");
+type ImageType = {
+  id: number;
+  imageUrl: string;
+  ImageName?: string | null;
+  filename?: string | null;
+};
 
-    const url = baseURL.endsWith("/images") ? baseURL : `${baseURL}/images`;
-    const res = await fetch(url, { cache: "no-store" });
+async function getImages(): Promise<ImageType[]> {
+  try {
+    const baseURL =
+      process.env.NEXT_PUBLIC_API_BASE ||
+      (process.env.NODE_ENV === "production"
+        ? "https://cloud-system-a.vercel.app/api"
+        : "http://localhost:3001/api");
+
+    const res = await fetch(`${baseURL}/images`, { cache: "no-store" });
 
     if (!res.ok) {
       console.error("Response status:", res.status, res.statusText);
       return [];
     }
 
-    const data = await res.json();
-    return data.items || [];
+    const data: { items?: ImageType[] } = await res.json();
+    return data.items ?? [];
   } catch (err) {
     console.error("Error fetching images:", err);
     return [];
@@ -43,7 +52,7 @@ export default async function HomePage() {
         {/* Hero Section */}
         <section className="relative h-[60vh] w-full bg-gray-900 text-white flex items-center justify-center">
           <img
-            src={images[0]?.imageUrl || "/placeholder.jpg"}
+            src={images[0]?.imageUrl ?? "/placeholder.jpg"}
             alt="Hero Background"
             className="absolute inset-0 w-full h-full object-cover opacity-60"
           />
@@ -81,7 +90,7 @@ export default async function HomePage() {
                 No images available
               </p>
             ) : (
-              images.map((image: any) => (
+              images.map((image) => (
                 <Link
                   href={`/image/${image.id}`}
                   key={image.id}
@@ -90,13 +99,13 @@ export default async function HomePage() {
                   <div className="aspect-video">
                     <img
                       src={image.imageUrl}
-                      alt={image.ImageName || image.filename || "Image"}
+                      alt={image.ImageName ?? image.filename ?? "Image"}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-800 text-sm md:text-base">
-                      {image.ImageName || image.filename}
+                      {image.ImageName ?? image.filename}
                     </h3>
                     <p className="text-xs text-gray-500 mt-1">Artist Gallery</p>
                   </div>
