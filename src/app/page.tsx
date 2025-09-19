@@ -90,9 +90,9 @@ export default async function HomePage() {
           />
           <div className="relative z-10 text-center">
             <h1 className="text-4xl md:text-6xl font-bold tracking-wide">
-              FINE ARTS
+              Visual Gallery
             </h1>
-            <p className="mt-2 text-lg md:text-2xl font-light">For the Home</p>
+            <p className="mt-2 text-lg md:text-2xl font-light">Cloud</p>
           </div>
         </section>
 
@@ -100,7 +100,7 @@ export default async function HomePage() {
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                Featured Artists
+                Featured Users
               </h2>
               <p className="text-gray-600 max-w-2xl">
                 Cloud Storage Gallery introduces great art and artists. Now
@@ -113,7 +113,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="bg-yellow-100 py-12 px-6 md:px-12">
+        <section className="bg-blue-200 py-12 px-6 md:px-12">
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {images.length === 0 ? (
               <p className="text-center text-lg text-gray-500 col-span-full">
